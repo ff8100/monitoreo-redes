@@ -361,9 +361,9 @@ function renderPerson(which, title, defaultImage){
 function renderCharts(){
   const r = DATA.resumen;
 
-  // 1. Obtener las fechas de los cortes desde 01_Resumen
+  // 1. Obtener fechas de los cortes
   const rawAnt = val(r, ['fecha_corte_anterior', 'Fecha_corte_anterior']);
-  const rawAct = val(r, ['fecha_actualizacion', 'Fecha_actualizacion']);
+  const rawAct = val(r, ['fecha_actualizacion', 'Fecha_actualizacion', 'fecha_reporte', 'Fecha_reporte']);
 
   const dateAnt = parseDate(rawAnt);
   const dateAct = parseDate(rawAct);
@@ -371,52 +371,67 @@ function renderCharts(){
   const labelAnt = dateAnt ? dateText(dateAnt) : 'Corte Anterior';
   const labelAct = dateAct ? dateText(dateAct) : 'Corte Actual';
 
-  // Helper para comparar si dos fechas son el mismo día (ignorando horas)
-  const isSameDay = (d1, d2) => {
-    if (!d1 || !d2) return false;
-    return d1.getFullYear() === d2.getFullYear() &&
-           d1.getMonth() === d2.getMonth() &&
-           d1.getDate() === d2.getDate();
+  // Convierte cualquier objeto Date o String a formato estándar YYYY-MM-DD
+  const toYMD = (d) => {
+    const parsed = parseDate(d);
+    if (!parsed) return null;
+    const y = parsed.getFullYear();
+    const m = String(parsed.getMonth() + 1).padStart(2, '0');
+    const day = String(parsed.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
   };
 
-  // 2. Función para contar publicaciones según Cuenta, Red Social y Fecha
-  const contarPubsPorFecha = (cuentaKey, redBuscada, targetDate) => {
-    if (!targetDate) return 0;
+  const keyAnt = toYMD(dateAnt);
+  const keyAct = toYMD(dateAct);
+
+  // 2. Función robusta para contar publicaciones por red y fecha
+  const contarPubsPorFecha = (cuentaKey, redBuscada, targetKey) => {
+    if (!targetKey) return 0;
     const pubs = publicationRows(cuentaKey);
+
     return pubs.filter(p => {
-      const red = norm(val(p, ['red', 'Red']));
-      const pDate = parseDate(val(p, ['fecha', 'Fecha']));
-      return red.includes(redBuscada) && isSameDay(pDate, targetDate);
+      const redVal = norm(val(p, ['red', 'Red']));
+      const pDateKey = toYMD(val(p, ['fecha', 'Fecha']));
+
+      // Coincidencia flexible de Red Social (Facebook / Instagram)
+      let matchesRed = false;
+      if (redBuscada === 'fb' && (redVal.includes('facebook') || redVal.includes('fb'))) matchesRed = true;
+      if (redBuscada === 'ig' && (redVal.includes('instagram') || redVal.includes('ig'))) matchesRed = true;
+
+      return matchesRed && (pDateKey === targetKey);
     }).length;
   };
 
-  // 3. Generar las métricas calculadas automáticamente
+  // 3. Métricas para cada gráfico
   const configs = [
     {
       id: 'chartSecretaria',
       cuenta: 'secretaria',
-      fbAnt: contarPubsPorFecha('secretaria', 'Facebook', dateAnt),
-      fbAct: contarPubsPorFecha('secretaria', 'Facebook', dateAct),
-      igAnt: contarPubsPorFecha('secretaria', 'Instagram', dateAnt),
-      igAct: contarPubsPorFecha('secretaria', 'Instagram', dateAct)
+      fbAnt: contarPubsPorFecha('secretaria', 'fb', keyAnt),
+      fbAct: contarPubsPorFecha('secretaria', 'fb', keyAct),
+      igAnt: contarPubsPorFecha('secretaria', 'ig', keyAnt),
+      igAct: contarPubsPorFecha('secretaria', 'ig', keyAct)
     },
     {
       id: 'chartFelix',
       cuenta: 'felix',
-      fbAnt: contarPubsPorFecha('felix', 'Facebook', dateAnt),
-      fbAct: contarPubsPorFecha('felix', 'Facebook', dateAct),
-      igAnt: contarPubsPorFecha('felix', 'Instagram', dateAnt),
-      igAct: contarPubsPorFecha('felix', 'Instagram', dateAct)
+      fbAnt: contarPubsPorFecha('felix', 'fb', keyAnt),
+      fbAct: contarPubsPorFecha('felix', 'fb', keyAct),
+      igAnt: contarPubsPorFecha('felix', 'ig', keyAnt),
+      igAct: contarPubsPorFecha('felix', 'ig', keyAct)
     }
   ];
 
-  // 4. Renderizar gráficas en Chart.js
+  // 4. Renderizado con Chart.js
   configs.forEach(cfg => {
     if(chartInstances[cfg.id]){
       chartInstances[cfg.id].destroy();
     }
 
-    const ctx = document.getElementById(cfg.id).getContext('2d');
+    const canvas = document.getElementById(cfg.id);
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+
     chartInstances[cfg.id] = new Chart(ctx, {
       type: 'bar',
       data: {
@@ -425,13 +440,13 @@ function renderCharts(){
           {
             label: `Corte Anterior (${labelAnt})`,
             data: [cfg.fbAnt, cfg.igAnt],
-            backgroundColor: '#776b62', // Gris para el corte previo
+            backgroundColor: '#776b62',
             borderRadius: 6
           },
           {
             label: `Corte Actual (${labelAct})`,
             data: [cfg.fbAct, cfg.igAct],
-            backgroundColor: '#c1440e', // Naranja/Acento para el corte actual
+            backgroundColor: '#c1440e',
             borderRadius: 6
           }
         ]
@@ -462,7 +477,6 @@ function renderCharts(){
     });
   });
 }
-
 function renderFeatured(){
   const box = document.getElementById('featured');
   box.innerHTML = '';
