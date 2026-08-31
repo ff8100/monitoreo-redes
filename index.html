@@ -363,7 +363,7 @@ function renderCharts(){
 
   // 1. Obtener las fechas de los cortes desde 01_Resumen
   const rawAnt = val(r, ['fecha_corte_anterior', 'Fecha_corte_anterior']);
-  const rawAct = val(r, ['fecha_actualizacion', 'Fecha_actualizacion', 'fecha_reporte', 'Fecha_reporte']);
+  const rawAct = val(r, ['fecha_actualizacion', 'Fecha_actualizacion']);
 
   const dateAnt = parseDate(rawAnt);
   const dateAct = parseDate(rawAct);
@@ -395,18 +395,18 @@ function renderCharts(){
     {
       id: 'chartSecretaria',
       cuenta: 'secretaria',
-      fbAnt: contarPubsPorFecha('secretaria', 'fb', dateAnt),
-      fbAct: contarPubsPorFecha('secretaria', 'fb', dateAct),
-      igAnt: contarPubsPorFecha('secretaria', 'ig', dateAnt),
-      igAct: contarPubsPorFecha('secretaria', 'ig', dateAct)
+      fbAnt: contarPubsPorFecha('secretaria', 'Facebook', dateAnt),
+      fbAct: contarPubsPorFecha('secretaria', 'Facebook', dateAct),
+      igAnt: contarPubsPorFecha('secretaria', 'Instagram', dateAnt),
+      igAct: contarPubsPorFecha('secretaria', 'Instagram', dateAct)
     },
     {
       id: 'chartFelix',
       cuenta: 'felix',
-      fbAnt: contarPubsPorFecha('felix', 'fb', dateAnt),
-      fbAct: contarPubsPorFecha('felix', 'fb', dateAct),
-      igAnt: contarPubsPorFecha('felix', 'ig', dateAnt),
-      igAct: contarPubsPorFecha('felix', 'ig', dateAct)
+      fbAnt: contarPubsPorFecha('felix', 'Facebook', dateAnt),
+      fbAct: contarPubsPorFecha('felix', 'Facebook', dateAct),
+      igAnt: contarPubsPorFecha('felix', 'Instagram', dateAnt),
+      igAct: contarPubsPorFecha('felix', 'Instagram', dateAct)
     }
   ];
 
