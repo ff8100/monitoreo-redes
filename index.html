@@ -359,48 +359,79 @@ function renderPerson(which, title, defaultImage){
 }
 
 function renderCharts(){
-  ['secretaria', 'felix'].forEach(accountKey => {
-    const canvasId = accountKey === 'secretaria' ? 'chartSecretaria' : 'chartFelix';
-    const pubs = publicationRows(accountKey);
-    
-    let fbPosts = 0, fbReactions = 0;
-    let igPosts = 0, igReactions = 0;
+  const r = DATA.resumen;
 
-    pubs.forEach(p => {
+  // 1. Obtener las fechas de los cortes desde 01_Resumen
+  const rawAnt = val(r, ['fecha_corte_anterior', 'Fecha_corte_anterior']);
+  const rawAct = val(r, ['fecha_actualizacion', 'Fecha_actualizacion', 'fecha_reporte', 'Fecha_reporte']);
+
+  const dateAnt = parseDate(rawAnt);
+  const dateAct = parseDate(rawAct);
+
+  const labelAnt = dateAnt ? dateText(dateAnt) : 'Corte Anterior';
+  const labelAct = dateAct ? dateText(dateAct) : 'Corte Actual';
+
+  // Helper para comparar si dos fechas son el mismo día (ignorando horas)
+  const isSameDay = (d1, d2) => {
+    if (!d1 || !d2) return false;
+    return d1.getFullYear() === d2.getFullYear() &&
+           d1.getMonth() === d2.getMonth() &&
+           d1.getDate() === d2.getDate();
+  };
+
+  // 2. Función para contar publicaciones según Cuenta, Red Social y Fecha
+  const contarPubsPorFecha = (cuentaKey, redBuscada, targetDate) => {
+    if (!targetDate) return 0;
+    const pubs = publicationRows(cuentaKey);
+    return pubs.filter(p => {
       const red = norm(val(p, ['red', 'Red']));
-      const reacciones = Number(val(p, ['reacciones', 'Reacciones'])) || 0;
+      const pDate = parseDate(val(p, ['fecha', 'Fecha']));
+      return red.includes(redBuscada) && isSameDay(pDate, targetDate);
+    }).length;
+  };
 
-      if (red.includes('facebook') || red.includes('fb')) {
-        fbPosts += 1;
-        fbReactions += reacciones;
-      } else if (red.includes('instagram') || red.includes('ig')) {
-        igPosts += 1;
-        igReactions += reacciones;
-      }
-    });
+  // 3. Generar las métricas calculadas automáticamente
+  const configs = [
+    {
+      id: 'chartSecretaria',
+      cuenta: 'secretaria',
+      fbAnt: contarPubsPorFecha('secretaria', 'fb', dateAnt),
+      fbAct: contarPubsPorFecha('secretaria', 'fb', dateAct),
+      igAnt: contarPubsPorFecha('secretaria', 'ig', dateAnt),
+      igAct: contarPubsPorFecha('secretaria', 'ig', dateAct)
+    },
+    {
+      id: 'chartFelix',
+      cuenta: 'felix',
+      fbAnt: contarPubsPorFecha('felix', 'fb', dateAnt),
+      fbAct: contarPubsPorFecha('felix', 'fb', dateAct),
+      igAnt: contarPubsPorFecha('felix', 'ig', dateAnt),
+      igAct: contarPubsPorFecha('felix', 'ig', dateAct)
+    }
+  ];
 
-    if(chartInstances[canvasId]){
-      chartInstances[canvasId].destroy();
+  // 4. Renderizar gráficas en Chart.js
+  configs.forEach(cfg => {
+    if(chartInstances[cfg.id]){
+      chartInstances[cfg.id].destroy();
     }
 
-    const ctx = document.getElementById(canvasId).getContext('2d');
-    chartInstances[canvasId] = new Chart(ctx, {
+    const ctx = document.getElementById(cfg.id).getContext('2d');
+    chartInstances[cfg.id] = new Chart(ctx, {
       type: 'bar',
       data: {
         labels: ['Facebook', 'Instagram'],
         datasets: [
           {
-            label: 'Publicaciones',
-            data: [fbPosts, igPosts],
-            backgroundColor: '#ff8100',
-            yAxisID: 'yPubs',
+            label: `Corte Anterior (${labelAnt})`,
+            data: [cfg.fbAnt, cfg.igAnt],
+            backgroundColor: '#776b62', // Gris para el corte previo
             borderRadius: 6
           },
           {
-            label: 'Reacciones',
-            data: [fbReactions, igReactions],
-            backgroundColor: '#B45A00',
-            yAxisID: 'yReac',
+            label: `Corte Actual (${labelAct})`,
+            data: [cfg.fbAct, cfg.igAct],
+            backgroundColor: '#c1440e', // Naranja/Acento para el corte actual
             borderRadius: 6
           }
         ]
@@ -408,29 +439,23 @@ function renderCharts(){
       options: {
         responsive: true,
         plugins: {
-          legend: { position: 'top' },
+          legend: { 
+            position: 'top',
+            labels: { font: { size: 11, weight: 'bold' } }
+          },
           tooltip: {
             callbacks: {
               label: function(context) {
-                return `${context.dataset.label}: ${fmt(context.raw)}`;
+                return `${context.dataset.label}: ${fmt(context.raw)} publicaciones`;
               }
             }
           }
         },
         scales: {
-          yPubs: {
-            type: 'linear',
-            position: 'left',
+          y: {
             beginAtZero: true,
-            title: { display: true, text: 'Publicaciones', font: { size: 10, weight: 'bold' } },
-            ticks: { precision: 0 }
-          },
-          yReac: {
-            type: 'linear',
-            position: 'right',
-            beginAtZero: true,
-            title: { display: true, text: 'Reacciones', font: { size: 10, weight: 'bold' } },
-            grid: { drawOnChartArea: false }
+            ticks: { precision: 0 },
+            title: { display: true, text: 'Cantidad de Publicaciones', font: { size: 10, weight: 'bold' } }
           }
         }
       }
