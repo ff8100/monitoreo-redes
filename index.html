@@ -353,11 +353,15 @@ function renderPerson(which, title, defaultImage){
   const fbRow = rows.find(r => norm(val(r, ['Red', 'red'])).includes('fb') || norm(val(r, ['Red', 'red'])).includes('facebook'));
   const igRow = rows.find(r => norm(val(r, ['Red', 'red'])).includes('ig') || norm(val(r, ['Red', 'red'])).includes('instagram'));
 
-  const fbSeguidores = fbRow ? val(fbRow, ['Seguidores', 'seguidores']) : 0;
-  const igSeguidores = igRow ? val(igRow, ['Seguidores', 'seguidores']) : 0;
-  const totalSeguidores = sum(rows, ['Seguidores', 'seguidores']);
-  const postsCount = pubs.length;
+  // Seguidores Corte Anterior
+  const fbAnt = fbRow ? val(fbRow, ['Seguidores', 'seguidores']) : 0;
+  const igAnt = igRow ? val(igRow, ['Seguidores', 'seguidores']) : 0;
 
+  // Seguidores Corte Actual
+  const fbAct = fbRow ? val(fbRow, ['seguidores_corte_actual', 'seguidores_actual']) : 0;
+  const igAct = igRow ? val(igRow, ['seguidores_corte_actual', 'seguidores_actual']) : 0;
+
+  const postsCount = pubs.length;
   const img = IMAGES[defaultImage] || '';
 
   el.innerHTML = `
@@ -366,19 +370,18 @@ function renderPerson(which, title, defaultImage){
       <div>
         <div class="person-name">${title}</div>
         <div class="person-sub">Presencia digital</div>
-        <div class="followers">${fmt(totalSeguidores)} <small>seguidores totales</small></div>
       </div>
     </div>
     <div class="platforms">
       <div class="platform">
-        <b>Facebook (Corte Ant.)</b>
-        <div class="n">${fmt(fbSeguidores)}</div>
-        <small>seguidores</small>
+        <b>Facebook</b>
+        <div class="n">${fmt(fbAct || fbAnt)}</div>
+        <small>Ant: ${fmt(fbAnt)}</small>
       </div>
       <div class="platform">
-        <b>Instagram (Corte Ant.)</b>
-        <div class="n">${fmt(igSeguidores)}</div>
-        <small>seguidores</small>
+        <b>Instagram</b>
+        <div class="n">${fmt(igAct || igAnt)}</div>
+        <small>Ant: ${fmt(igAnt)}</small>
       </div>
     </div>
     <div class="kpis-summary">
