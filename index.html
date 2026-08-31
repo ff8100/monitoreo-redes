@@ -47,67 +47,60 @@ button,input{font:inherit}
 .section-head h2{margin:0;font-size:17px}
 .section-head span{font-size:11px;color:var(--muted)}
 
-.person-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.person-grid{display:grid;grid-template-columns:repeat(3, 1fr);gap:18px}
 .person{
   background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
   padding:20px;box-shadow:var(--shadow)
 }
-.person-top{display:flex;gap:17px;align-items:center;border-bottom:1px solid var(--border);padding-bottom:17px}
-.avatar{width:78px;height:78px;border-radius:14px;object-fit:cover;background:#eee;flex:none}
-.person-name{font-size:17px;font-weight:900}
-.person-sub{font-size:11px;color:var(--muted);margin-top:4px}
-.followers{font-family:monospace;font-size:22px;font-weight:800;margin-top:7px}
+.person-top{display:flex;gap:15px;align-items:center;border-bottom:1px solid var(--border);padding-bottom:15px}
+.avatar{width:68px;height:68px;border-radius:14px;object-fit:cover;background:#eee;flex:none}
+.person-name{font-size:15px;font-weight:900}
+.person-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.followers{font-family:monospace;font-size:20px;font-weight:800;margin-top:5px}
 .followers small{font-family:Inter;font-size:10px;color:var(--muted);font-weight:600}
-.platforms{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}
-.platform{background:var(--bg);border-radius:11px;padding:12px}
-.platform b{font-size:11px}
-.platform .n{font-family:monospace;font-size:19px;font-weight:800;margin-top:5px}
-.platform small{font-size:10px;color:var(--muted)}
 
-.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:14px}
-.kpi{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:15px 16px;box-shadow:var(--shadow)}
-.kpi .label{font-size:10px;color:var(--muted);text-transform:uppercase;font-weight:800;letter-spacing:.4px}
-.kpi .value{font-family:monospace;font-size:23px;font-weight:800;margin-top:8px}
+.platforms{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.platform{background:var(--bg);border-radius:11px;padding:10px}
+.platform b{font-size:10px;display:block;color:var(--muted);text-transform:uppercase}
+.platform .n{font-family:monospace;font-size:16px;font-weight:800;margin-top:3px}
+.platform small{font-size:9px;color:var(--muted)}
 
-.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:15px}
+.kpis-summary{margin-top:12px;background:var(--soft);border-radius:11px;padding:12px;display:flex;justify-content:space-between;align-items:center}
+.kpis-summary .label{font-size:11px;font-weight:800;color:var(--primary-dark)}
+.kpis-summary .value{font-family:monospace;font-size:20px;font-weight:900;color:var(--primary-dark)}
+
+.charts-grid{display:grid;grid-template-columns:repeat(3, 1fr);gap:18px;margin-top:15px}
 .chart-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
-.chart-card h3{margin:0 0 15px 0;font-size:14px;color:var(--ink)}
+.chart-card h3{margin:0 0 15px 0;font-size:13px;color:var(--ink)}
 
-.feature-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
 .post{
-  background:#fff;border:1px solid var(--border);border-radius:15px;overflow:hidden;box-shadow:var(--shadow)
+  background:#fff;border:1px solid var(--border);border-radius:15px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;justify-content:space-between
 }
-.post-img{height:205px;background:#e8e0d7;display:flex;align-items:center;justify-content:center;color:#8b7b6d;font-size:11px}
+.post-img{height:180px;background:#e8e0d7;display:flex;align-items:center;justify-content:center;color:#8b7b6d;font-size:11px}
 .post-img img{width:100%;height:100%;object-fit:cover}
-.post-body{padding:14px}
+.post-body{padding:14px;flex-grow:1;display:flex;flex-direction:column;justify-content:space-between}
 .post-tag{display:flex;justify-content:space-between;gap:10px;align-items:center}
-.badge{background:var(--soft);color:var(--primary-dark);font-size:9px;font-weight:900;padding:5px 7px;border-radius:6px;text-transform:uppercase}
-.post-title{font-size:14px;font-weight:900;margin-top:10px;line-height:1.3}
-.post-desc{font-size:11px;color:var(--muted);line-height:1.45;margin-top:6px;min-height:32px}
-.metrics{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;padding-top:10px;border-top:1px solid var(--border)}
-.metric{font-family:monospace;font-size:11px;font-weight:800}
-.metric span{font-family:Inter;color:var(--muted);font-size:9px;font-weight:600}
-.link{display:inline-block;margin-top:11px;color:var(--primary);font-size:10px;font-weight:800;text-decoration:none}
+.badge{background:var(--soft);color:var(--primary-dark);font-size:9px;font-weight:900;padding:4px 6px;border-radius:6px;text-transform:uppercase}
+.post-title{font-size:13px;font-weight:900;margin-top:8px;line-height:1.3}
+.post-desc{font-size:11px;color:var(--muted);line-height:1.4;margin-top:6px}
+.link{display:inline-block;margin-top:10px;color:var(--primary);font-size:11px;font-weight:800;text-decoration:none}
 .link-table{color:var(--primary);text-decoration:none;font-weight:700}
 .link-table:hover{text-decoration:underline}
 
+.tables-stack{display:flex;flex-direction:column;gap:20px}
 .table-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+.table-card h3{margin:0 0 12px 0;font-size:14px;color:var(--primary-dark);font-weight:900}
 table{width:100%;border-collapse:collapse;font-size:12px}
-th{text-align:left;font-size:10px;text-transform:uppercase;color:var(--muted);padding:10px;border-bottom:1px solid var(--border)}
-td{padding:11px 10px;border-bottom:1px solid #eee}
-td.num{text-align:right;font-family:monospace;font-weight:700}
+th{text-align:left;font-size:10px;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--border)}
+td{padding:10px;border-bottom:1px solid #eee}
 .account{font-weight:800}
 .footer{margin-top:25px;padding-top:15px;border-top:1px solid var(--border);font-size:10.5px;color:var(--muted);line-height:1.5}
 
-.empty{padding:35px;text-align:center;color:var(--muted);font-size:12px;background:#fff;border:1px dashed var(--border);border-radius:12px}
+.empty{padding:25px;text-align:center;color:var(--muted);font-size:12px;background:#fff;border:1px dashed var(--border);border-radius:12px}
 
-@media(max-width:1050px){
- .feature-grid{grid-template-columns:1fr 1fr}.kpis{grid-template-columns:repeat(3,1fr)}
- .charts-grid{grid-template-columns:1fr}
-}
-@media(max-width:750px){
- .person-grid,.feature-grid{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}
- .header{padding:20px}.container{padding:20px}
+@media(max-width:1100px){
+  .person-grid, .charts-grid, .feature-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -136,16 +129,17 @@ td.num{text-align:right;font-family:monospace;font-weight:700}
 
   <div class="section-head">
     <h2>Resumen por cuenta</h2>
-    <span>Seguidores y actividad del corte</span>
+    <span>Seguidores al corte anterior y publicaciones activas</span>
   </div>
   <div class="person-grid">
     <section class="person" id="secretaria"></section>
     <section class="person" id="felix"></section>
+    <section class="person" id="monica"></section>
   </div>
 
   <div class="section-head">
-    <h2>Publicaciones y Reacciones por Red Social</h2>
-    <span>Comparativa de rendimiento con escalas independientes</span>
+    <h2>Publicaciones por Red Social</h2>
+    <span>Comparativa de actividad por corte</span>
   </div>
   <div class="charts-grid">
     <div class="chart-card">
@@ -156,34 +150,65 @@ td.num{text-align:right;font-family:monospace;font-weight:700}
       <h3>Félix Arratia</h3>
       <canvas id="chartFelix"></canvas>
     </div>
+    <div class="chart-card">
+      <h3>Mónica Oyervides</h3>
+      <canvas id="chartMonica"></canvas>
+    </div>
   </div>
 
   <div class="section-head">
-    <h2>Publicaciones destacadas</h2>
-    <span>Las dos publicaciones seleccionadas como destacadas</span>
+    <h2>Publicación destacada por cuenta</h2>
+    <span>Destacada principal del periodo</span>
   </div>
   <div class="feature-grid" id="featured"></div>
 
   <div class="section-head">
     <h2>Actividad de publicaciones</h2>
-    <span>Detalle de publicaciones tomadas de 02_Publicaciones</span>
+    <span>Detalle de contenido por cuenta</span>
   </div>
-  <div class="table-card">
-    <table>
-      <thead>
-        <tr>
-          <th>Cuenta</th>
-          <th>Red</th>
-          <th>Tema / Publicación</th>
-          <th>Reacciones</th>
-          <th>Comentarios</th>
-          <th>Reposts</th>
-          <th>Enviados</th>
-          <th>Visualizaciones</th>
-        </tr>
-      </thead>
-      <tbody id="activityTable"></tbody>
-    </table>
+  
+  <div class="tables-stack">
+    <div class="table-card">
+      <h3>Secretaría de Igualdad e Inclusión</h3>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 15%;">Red</th>
+            <th style="width: 35%;">Tema / Título</th>
+            <th>Publicación / Descripción</th>
+          </tr>
+        </thead>
+        <tbody id="tableSecretaria"></tbody>
+      </table>
+    </div>
+
+    <div class="table-card">
+      <h3>Félix Arratia</h3>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 15%;">Red</th>
+            <th style="width: 35%;">Tema / Título</th>
+            <th>Publicación / Descripción</th>
+          </tr>
+        </thead>
+        <tbody id="tableFelix"></tbody>
+      </table>
+    </div>
+
+    <div class="table-card">
+      <h3>Mónica Oyervides</h3>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 15%;">Red</th>
+            <th style="width: 35%;">Tema / Título</th>
+            <th>Publicación / Descripción</th>
+          </tr>
+        </thead>
+        <tbody id="tableMonica"></tbody>
+      </table>
+    </div>
   </div>
 
   <div class="footer">
@@ -216,7 +241,6 @@ function parseDate(x){
   if(typeof x === 'number') return new Date((x - 25569) * 86400 * 1000);
   if(typeof x === 'string'){
     const cleanStr = x.trim();
-    // Soporte para formato latino DD/MM/YYYY
     const latParts = cleanStr.split('/');
     if(latParts.length === 3 && latParts[2].length === 4){
       return new Date(latParts[2], latParts[1] - 1, latParts[0]);
@@ -240,6 +264,7 @@ function dateText(x){
 function keyAccount(s){
   const n = norm(s);
   if(n.includes('felix')) return 'felix';
+  if(n.includes('monica') || n.includes('oyervides')) return 'monica';
   return 'secretaria';
 }
 
@@ -255,7 +280,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       DATA.resumen = {};
 
       if (resSheet.length > 0) {
-        // Detecta automáticamente si el Excel es vertical (Campo/Texto) o de 1 sola fila con encabezados
         if (resSheet[0]['Campo'] !== undefined || resSheet[0]['campo'] !== undefined) {
           resSheet.forEach(r => {
             const fieldKey = val(r, ['Campo', 'campo']);
@@ -273,6 +297,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       IMAGES['Logo.png'] = 'Logo.png';
       IMAGES['Felix.png'] = 'Felix.png';
+      IMAGES['Monica.png'] = 'Monica.png';
       
       DATA.destacadas.forEach(d => {
         const imgName = val(d, ['archivo_imagen', 'Archivo_imagen']);
@@ -294,6 +319,7 @@ function renderAll(){
   renderHeader();
   renderPerson('secretaria', 'SECRETARÍA DE IGUALDAD E INCLUSIÓN', 'Logo.png');
   renderPerson('felix', 'FÉLIX ARRATIA', 'Felix.png');
+  renderPerson('monica', 'MÓNICA OYERVIDES', 'Monica.png');
   renderCharts();
   renderFeatured();
   renderActivity();
@@ -320,48 +346,50 @@ function sum(rows, names){
 
 function renderPerson(which, title, defaultImage){
   const el = document.getElementById(which);
+  if(!el) return;
   const rows = accountRows(which);
   const pubs = publicationRows(which);
-  const followers = sum(rows, ['Seguidores', 'seguidores']);
-  const posts = pubs.length;
-  const reactions = sum(pubs, ['reacciones', 'Reacciones']);
-  const comments = sum(pubs, ['comentarios', 'Comentarios']);
-  const reposts = sum(pubs, ['reposts', 'Reposts', 'compartidos', 'Compartidos']);
-  const views = sum(pubs, ['visualizaciones', 'Visualizaciones']);
+  
+  const fbRow = rows.find(r => norm(val(r, ['Red', 'red'])).includes('fb') || norm(val(r, ['Red', 'red'])).includes('facebook'));
+  const igRow = rows.find(r => norm(val(r, ['Red', 'red'])).includes('ig') || norm(val(r, ['Red', 'red'])).includes('instagram'));
+
+  const fbSeguidores = fbRow ? val(fbRow, ['Seguidores', 'seguidores']) : 0;
+  const igSeguidores = igRow ? val(igRow, ['Seguidores', 'seguidores']) : 0;
+  const totalSeguidores = sum(rows, ['Seguidores', 'seguidores']);
+  const postsCount = pubs.length;
 
   const img = IMAGES[defaultImage] || '';
-  const platforms = rows.length ? rows.map(r => {
-    const red = val(r, ['Red', 'red']) || 'Red';
-    return `<div class="platform">
-      <b>${red}</b>
-      <div class="n">${fmt(val(r, ['Seguidores', 'seguidores']))}</div>
-      <small>seguidores</small>
-    </div>`;
-  }).join('') : '<div class="platform"><b>Sin datos</b><div class="n">—</div></div>';
 
   el.innerHTML = `
     <div class="person-top">
       <img class="avatar" src="${img}" onerror="this.style.display='none'">
       <div>
         <div class="person-name">${title}</div>
-        <div class="person-sub">Presencia digital al corte</div>
-        <div class="followers">${fmt(followers)} <small>seguidores totales</small></div>
+        <div class="person-sub">Presencia digital</div>
+        <div class="followers">${fmt(totalSeguidores)} <small>seguidores totales</small></div>
       </div>
     </div>
-    <div class="platforms">${platforms}</div>
-    <div class="kpis">
-      <div class="kpi"><div class="label">Publicaciones</div><div class="value">${fmt(posts)}</div></div>
-      <div class="kpi"><div class="label">Reacciones</div><div class="value">${fmt(reactions)}</div></div>
-      <div class="kpi"><div class="label">Comentarios</div><div class="value">${fmt(comments)}</div></div>
-      <div class="kpi"><div class="label">Reposts</div><div class="value">${fmt(reposts)}</div></div>
-      <div class="kpi"><div class="label">Visualizaciones</div><div class="value">${fmt(views)}</div></div>
+    <div class="platforms">
+      <div class="platform">
+        <b>Facebook (Corte Ant.)</b>
+        <div class="n">${fmt(fbSeguidores)}</div>
+        <small>seguidores</small>
+      </div>
+      <div class="platform">
+        <b>Instagram (Corte Ant.)</b>
+        <div class="n">${fmt(igSeguidores)}</div>
+        <small>seguidores</small>
+      </div>
+    </div>
+    <div class="kpis-summary">
+      <span class="label">PUBLICACIONES ACTIVAS</span>
+      <span class="value">${fmt(postsCount)}</span>
     </div>`;
 }
 
 function renderCharts(){
   const r = DATA.resumen;
 
-  // 1. Obtener fechas de los cortes
   const rawAnt = val(r, ['fecha_corte_anterior', 'Fecha_corte_anterior']);
   const rawAct = val(r, ['fecha_actualizacion', 'Fecha_actualizacion', 'fecha_reporte', 'Fecha_reporte']);
 
@@ -371,7 +399,6 @@ function renderCharts(){
   const labelAnt = dateAnt ? dateText(dateAnt) : 'Corte Anterior';
   const labelAct = dateAct ? dateText(dateAct) : 'Corte Actual';
 
-  // Convierte cualquier objeto Date o String a formato estándar YYYY-MM-DD
   const toYMD = (d) => {
     const parsed = parseDate(d);
     if (!parsed) return null;
@@ -384,7 +411,6 @@ function renderCharts(){
   const keyAnt = toYMD(dateAnt);
   const keyAct = toYMD(dateAct);
 
-  // 2. Función robusta para contar publicaciones por red y fecha
   const contarPubsPorFecha = (cuentaKey, redBuscada, targetKey) => {
     if (!targetKey) return 0;
     const pubs = publicationRows(cuentaKey);
@@ -393,7 +419,6 @@ function renderCharts(){
       const redVal = norm(val(p, ['red', 'Red']));
       const pDateKey = toYMD(val(p, ['fecha', 'Fecha']));
 
-      // Coincidencia flexible de Red Social (Facebook / Instagram)
       let matchesRed = false;
       if (redBuscada === 'fb' && (redVal.includes('facebook') || redVal.includes('fb'))) matchesRed = true;
       if (redBuscada === 'ig' && (redVal.includes('instagram') || redVal.includes('ig'))) matchesRed = true;
@@ -402,7 +427,6 @@ function renderCharts(){
     }).length;
   };
 
-  // 3. Métricas para cada gráfico
   const configs = [
     {
       id: 'chartSecretaria',
@@ -419,10 +443,17 @@ function renderCharts(){
       fbAct: contarPubsPorFecha('felix', 'fb', keyAct),
       igAnt: contarPubsPorFecha('felix', 'ig', keyAnt),
       igAct: contarPubsPorFecha('felix', 'ig', keyAct)
+    },
+    {
+      id: 'chartMonica',
+      cuenta: 'monica',
+      fbAnt: contarPubsPorFecha('monica', 'fb', keyAnt),
+      fbAct: contarPubsPorFecha('monica', 'fb', keyAct),
+      igAnt: contarPubsPorFecha('monica', 'ig', keyAnt),
+      igAct: contarPubsPorFecha('monica', 'ig', keyAct)
     }
   ];
 
-  // 4. Renderizado con Chart.js
   configs.forEach(cfg => {
     if(chartInstances[cfg.id]){
       chartInstances[cfg.id].destroy();
@@ -438,13 +469,13 @@ function renderCharts(){
         labels: ['Facebook', 'Instagram'],
         datasets: [
           {
-            label: `Corte Anterior (${labelAnt})`,
+            label: `Corte Ant. (${labelAnt})`,
             data: [cfg.fbAnt, cfg.igAnt],
             backgroundColor: '#776b62',
             borderRadius: 6
           },
           {
-            label: `Corte Actual (${labelAct})`,
+            label: `Corte Act. (${labelAct})`,
             data: [cfg.fbAct, cfg.igAct],
             backgroundColor: '#c1440e',
             borderRadius: 6
@@ -456,38 +487,35 @@ function renderCharts(){
         plugins: {
           legend: { 
             position: 'top',
-            labels: { font: { size: 11, weight: 'bold' } }
-          },
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                return `${context.dataset.label}: ${fmt(context.raw)} publicaciones`;
-              }
-            }
+            labels: { font: { size: 10, weight: 'bold' } }
           }
         },
         scales: {
           y: {
             beginAtZero: true,
             ticks: { precision: 0 },
-            title: { display: true, text: 'Cantidad de Publicaciones', font: { size: 10, weight: 'bold' } }
+            title: { display: true, text: 'Publicaciones', font: { size: 10, weight: 'bold' } }
           }
         }
       }
     });
   });
 }
+
 function renderFeatured(){
   const box = document.getElementById('featured');
   box.innerHTML = '';
-  const rows = DATA.destacadas.slice(0, 2);
 
-  if(!rows.length){
-    box.innerHTML = '<div class="empty" style="grid-column:1/-1">No hay publicaciones destacadas.</div>';
-    return;
-  }
+  const cuentas = ['secretaria', 'felix', 'monica'];
 
-  rows.forEach(r => {
+  cuentas.forEach(cKey => {
+    const r = DATA.destacadas.find(d => keyAccount(val(d, ['cuenta', 'Cuenta'])) === cKey);
+
+    if(!r){
+      box.insertAdjacentHTML('beforeend', `<div class="empty">Sin publicación destacada para esta cuenta.</div>`);
+      return;
+    }
+
     const id = val(r, ['id_publicacion', 'ID_publicacion', 'id', 'ID']);
     const pub = DATA.publicaciones.find(p => String(val(p, ['id_publicacion', 'ID_publicacion', 'id', 'ID'])) === String(id)) || {};
     const account = val(r, ['cuenta', 'Cuenta']) || val(pub, ['cuenta', 'Cuenta']);
@@ -501,20 +529,19 @@ function renderFeatured(){
 
     box.insertAdjacentHTML('beforeend', `
       <article class="post">
-        <div class="post-img">${image ? `<img src="${image}" alt="">` : 'Imagen no cargada'}</div>
-        <div class="post-body">
-          <div class="post-tag">
-            <span class="badge">${account}</span>
-            <span class="badge">${red}</span>
+        <div>
+          <div class="post-img">${image ? `<img src="${image}" alt="">` : 'Sin Imagen'}</div>
+          <div class="post-body">
+            <div class="post-tag">
+              <span class="badge">${account}</span>
+              <span class="badge">${red}</span>
+            </div>
+            <div class="post-title">${escapeHtml(title)}</div>
+            <div class="post-desc">${escapeHtml(desc)}</div>
+            ${reason ? `<div style="margin-top:9px;font-size:10px;color:var(--muted)">Destacada por: <b>${escapeHtml(reason)}</b></div>` : ''}
           </div>
-          <div class="post-title">${escapeHtml(title)}</div>
-          <div class="post-desc">${escapeHtml(desc)}</div>
-          <div class="metrics">
-            <div class="metric">👍 ${fmt(val(pub, ['reacciones', 'Reacciones']))} <span>reacciones</span></div>
-            <div class="metric">💬 ${fmt(val(pub, ['comentarios', 'Comentarios']))} <span>comentarios</span></div>
-            <div class="metric">👁 ${fmt(val(pub, ['visualizaciones', 'Visualizaciones']))} <span>vistas</span></div>
-          </div>
-          ${reason ? `<div style="margin-top:9px;font-size:10px;color:var(--muted)">Destacada por: <b>${escapeHtml(reason)}</b></div>` : ''}
+        </div>
+        <div style="padding:0 14px 14px;">
           ${link && link !== '#' ? `<a class="link" href="${link}" target="_blank">Ver publicación ↗</a>` : ''}
         </div>
       </article>`);
@@ -522,41 +549,41 @@ function renderFeatured(){
 }
 
 function renderActivity(){
-  const body = document.getElementById('activityTable');
-  body.innerHTML = '';
+  const mapAccounts = [
+    { key: 'secretaria', tableId: 'tableSecretaria' },
+    { key: 'felix', tableId: 'tableFelix' },
+    { key: 'monica', tableId: 'tableMonica' }
+  ];
 
-  if(!DATA.publicaciones.length){
-    body.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:20px;">Sin publicaciones registradas</td></tr>';
-    return;
-  }
+  mapAccounts.forEach(acc => {
+    const body = document.getElementById(acc.tableId);
+    if(!body) return;
+    body.innerHTML = '';
 
-  DATA.publicaciones.forEach(p => {
-    const cuenta = val(p, ['cuenta', 'Cuenta']) || '—';
-    const red = val(p, ['red', 'Red']) || '—';
-    const tema = val(p, ['tema', 'Tema', 'texto', 'Texto']) || 'Sin título';
-    const link = val(p, ['enlace', 'Enlace', 'link', 'Link']);
+    const pubs = publicationRows(acc.key);
 
-    const reacciones = val(p, ['reacciones', 'Reacciones']);
-    const comentarios = val(p, ['comentarios', 'Comentarios']);
-    const reposts = val(p, ['reposts', 'Reposts', 'compartidos', 'Compartidos']);
-    const enviados = val(p, ['enviados', 'Enviados']);
-    const visualizaciones = val(p, ['visualizaciones', 'Visualizaciones']);
+    if(!pubs.length){
+      body.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--muted);padding:15px;">Sin publicaciones registradas</td></tr>';
+      return;
+    }
 
-    const temaHtml = (link && link !== '#') 
-      ? `<a class="link-table" href="${link}" target="_blank" title="Abrir publicación original">${escapeHtml(tema)} ↗</a>`
-      : escapeHtml(tema);
+    pubs.forEach(p => {
+      const red = val(p, ['red', 'Red']) || '—';
+      const tema = val(p, ['tema', 'Tema']) || '—';
+      const desc = val(p, ['descripcion', 'Descripción', 'texto', 'Texto']) || 'Sin texto';
+      const link = val(p, ['enlace', 'Enlace', 'link', 'Link']);
 
-    body.insertAdjacentHTML('beforeend', `
-      <tr>
-        <td class="account">${escapeHtml(cuenta)}</td>
-        <td>${escapeHtml(red)}</td>
-        <td>${temaHtml}</td>
-        <td class="num">${fmt(reacciones)}</td>
-        <td class="num">${fmt(comentarios)}</td>
-        <td class="num">${fmt(reposts)}</td>
-        <td class="num">${fmt(enviados)}</td>
-        <td class="num">${fmt(visualizaciones)}</td>
-      </tr>`);
+      const linkHtml = (link && link !== '#') 
+        ? `<br><a class="link-table" href="${link}" target="_blank">Abrir publicación ↗</a>`
+        : '';
+
+      body.insertAdjacentHTML('beforeend', `
+        <tr>
+          <td><b>${escapeHtml(red)}</b></td>
+          <td>${escapeHtml(tema)}</td>
+          <td>${escapeHtml(desc)} ${linkHtml}</td>
+        </tr>`);
+    });
   });
 }
 
