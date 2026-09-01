@@ -23,6 +23,77 @@
       color: var(--primary);
     }
 
+    /* Modal de Autenticación */
+    #login-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(15, 23, 42, 0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .login-box {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      max-width: 320px;
+      width: 100%;
+    }
+
+    .login-box h3 { margin-top: 0; color: var(--primary); }
+    
+    .login-box input[type="password"] {
+      width: 90%;
+      padding: 10px;
+      margin: 15px 0;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 1rem;
+      text-align: center;
+    }
+
+    .login-box button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .login-box button:hover { background: #1d4ed8; }
+    .error-msg { color: #dc2626; font-size: 0.85rem; margin-top: 8px; display: none; }
+
+    /* Barra Superior de Fechas */
+    .header-info {
+      max-width: 1200px;
+      margin: 0 auto 20px auto;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      padding: 15px 20px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .date-badge {
+      background: #e2e8f0;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    /* Contenedor del Dashboard */
     .container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -43,7 +114,6 @@
       gap: 16px;
     }
 
-    /* Encabezado: Foto y Nombre */
     .account-header {
       display: flex;
       align-items: center;
@@ -66,7 +136,6 @@
       font-weight: bold;
     }
 
-    /* Tabla Matriz: IG | FB | OTRA */
     .matrix-table {
       width: 100%;
       border-collapse: collapse;
@@ -79,10 +148,7 @@
       padding: 6px 4px;
     }
 
-    .matrix-table th {
-      background-color: #f1f5f9;
-      font-weight: bold;
-    }
+    .matrix-table th { background-color: #f1f5f9; font-weight: bold; }
 
     .row-label {
       text-align: left;
@@ -100,18 +166,13 @@
       font-weight: bold;
     }
 
-    /* Gráfica de Barras: Ayer vs Hoy */
     .chart-section {
       border-top: 1px dashed var(--primary);
       padding-top: 12px;
       text-align: center;
     }
 
-    .chart-title {
-      font-weight: bold;
-      margin-bottom: 12px;
-      font-size: 0.95rem;
-    }
+    .chart-title { font-weight: bold; margin-bottom: 12px; font-size: 0.95rem; }
 
     .bars-container {
       display: flex;
@@ -131,12 +192,7 @@
       justify-content: flex-end;
     }
 
-    .bar-val {
-      font-size: 0.75rem;
-      font-weight: bold;
-      margin-bottom: 4px;
-    }
-
+    .bar-val { font-size: 0.75rem; font-weight: bold; margin-bottom: 4px; }
     .bar {
       width: 100%;
       border: 1.5px solid var(--primary);
@@ -146,45 +202,128 @@
 
     .bar-yesterday { background-color: var(--bar-yesterday); }
     .bar-today { background-color: var(--bar-today); }
-
-    .bar-label {
-      margin-top: 6px;
-      font-size: 0.8rem;
-      font-weight: bold;
-    }
+    .bar-label { margin-top: 6px; font-size: 0.8rem; font-weight: bold; }
   </style>
 </head>
 <body>
 
-  <div class="container" id="dashboard">
-    <!-- Se genera dinámicamente -->
+  <!-- Modal de Login -->
+  <div id="login-overlay">
+    <div class="login-box">
+      <h3>Acceso Requerido</h3>
+      <input type="password" id="password-input" placeholder="Ingresa la contraseña" onkeypress="handleKeyPress(event)">
+      <button onclick="checkPassword()">Ingresar</button>
+      <div id="error-msg" class="error-msg">Contraseña incorrecta</div>
+    </div>
+  </div>
+
+  <!-- Banner con Fechas del Reporte -->
+  <div class="header-info" id="header-info" style="display: none;">
+    <h2 style="margin:0; font-size:1.2rem;">Resumen de Redes Sociales</h2>
+    <div>
+      <span>Corte Actual: <span class="date-badge" id="txt-actualizacion">--</span></span>
+      <span style="margin-left: 15px;">Corte Anterior: <span class="date-badge" id="txt-anterior">--</span></span>
+    </div>
+  </div>
+
+  <!-- Contenedor del Dashboard -->
+  <div class="container" id="dashboard" style="display: none;">
+    <!-- Se llena dinámicamente -->
   </div>
 
   <script>
-    // Configuración de avatares locales
+    // Hash SHA-256 de la contraseña predeterminada ("1234")
+    const PASSWORD_HASH = "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4";
+
     const AVATARS = {
       'Félix Arratia': 'Felix.png',
       'Secretaría de Igualdad e Inclusión': 'Logo.png',
       'Mónica Oyervides': 'Monica.png'
     };
 
+    // Función auxiliar para calcular el Hash SHA-256 en el navegador
+    async function sha256(str) {
+      const buffer = new TextEncoder().encode(str);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    async function checkPassword() {
+      const input = document.getElementById('password-input').value;
+      const hashedInput = await sha256(input);
+
+      if (hashedInput === PASSWORD_HASH) {
+        document.getElementById('login-overlay').style.display = 'none';
+        document.getElementById('header-info').style.display = 'flex';
+        document.getElementById('dashboard').style.display = 'grid';
+        loadDashboardData();
+      } else {
+        document.getElementById('error-msg').style.display = 'block';
+      }
+    }
+
+    function handleKeyPress(e) {
+      if (e.key === 'Enter') checkPassword();
+    }
+
+    function formatDate(val) {
+      if (!val) return 'N/A';
+      if (typeof val === 'string' && val.includes('T')) return val.split('T')[0];
+      return String(val).substring(0, 10);
+    }
+
     function formatNum(num) {
       if (!num) return '0';
       return Number(num).toLocaleString('es-MX');
     }
 
+    function loadDashboardData() {
+      fetch('Redes.xlsx')
+        .then(res => res.arrayBuffer())
+        .then(data => {
+          const wb = XLSX.read(data, { type: 'array' });
+          
+          // 1. Procesar Pestaña Resumen (Fechas)
+          if (wb.Sheets['Resumen']) {
+            const resumenRows = XLSX.utils.sheet_to_json(wb.Sheets['Resumen'], { header: 1 });
+            resumenRows.forEach(row => {
+              if (row[0] === 'fecha_actualizacion') {
+                document.getElementById('txt-actualizacion').innerText = formatDate(row[1]);
+              }
+              if (row[0] === 'fecha_corte_anterior') {
+                document.getElementById('txt-anterior').innerText = formatDate(row[1]);
+              }
+            });
+          }
+
+          // 2. Procesar Pestaña Publicaciones
+          const pubSheet = wb.Sheets['Publicaciones'];
+          const rows = XLSX.utils.sheet_to_json(pubSheet);
+
+          const grouped = {};
+          rows.forEach(r => {
+            if (!grouped[r.cuenta]) grouped[r.cuenta] = [];
+            grouped[r.cuenta].push(r);
+          });
+
+          const dashboard = document.getElementById('dashboard');
+          dashboard.innerHTML = '';
+          Object.keys(grouped).forEach(cuenta => {
+            dashboard.innerHTML += renderCard(cuenta, grouped[cuenta]);
+          });
+        })
+        .catch(err => console.error("Error al leer Redes.xlsx:", err));
+    }
+
     function renderCard(accountName, rows) {
-      // Filtrar plataformas por tipo
       const ig = rows.find(r => r.red.toLowerCase().includes('instagram')) || {};
       const fb = rows.find(r => r.red.toLowerCase().includes('facebook')) || {};
-      
-      // Capturar otras redes (TikTok, X, LinkedIn, etc.)
       const otras = rows.filter(r => 
         !r.red.toLowerCase().includes('instagram') && 
         !r.red.toLowerCase().includes('facebook')
       );
 
-      // Consolidar totales
       const igSeg = ig.seguidores || 0;
       const fbSeg = fb.seguidores || 0;
       const otrasSeg = otras.reduce((sum, r) => sum + (r.seguidores || 0), 0);
@@ -193,17 +332,14 @@
       const fbPub = fb.publicaciones || 0;
       const otrasPub = otras.reduce((sum, r) => sum + (r.publicaciones || 0), 0);
 
-      // Totales de publicaciones globales (Ayer vs Hoy)
       const pubAyerTotal = rows.reduce((sum, r) => sum + (r.publicaciones_ayer || 0), 0);
       const pubHoyTotal = rows.reduce((sum, r) => sum + (r.publicaciones_hoy || 0), 0);
 
-      // Determinar Red Principal (la de mayor seguidores)
       let mainRed = 'FB';
       let maxSeg = fbSeg;
       if (igSeg > maxSeg) { mainRed = 'IG'; maxSeg = igSeg; }
       if (otrasSeg > maxSeg) { mainRed = 'Otra'; }
 
-      // Escala para la altura de las barras (máximo 80px)
       const maxVal = Math.max(pubAyerTotal, pubHoyTotal, 1);
       const hAyer = Math.max((pubAyerTotal / maxVal) * 80, 6);
       const hHoy = Math.max((pubHoyTotal / maxVal) * 80, 6);
@@ -212,13 +348,11 @@
 
       return `
         <div class="card">
-          <!-- Encabezado -->
           <div class="account-header">
             <img class="avatar" src="${avatarSrc}" onerror="this.src='https://via.placeholder.com/50'">
             <div class="account-name">${accountName}</div>
           </div>
 
-          <!-- Matriz de Métricas -->
           <table class="matrix-table">
             <thead>
               <tr>
@@ -244,13 +378,11 @@
             </tbody>
           </table>
 
-          <!-- Red Principal -->
-          <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.9rem; padding:0 4px;">
+          <div style="display:flex; justify-content:space-between; align-align:center; font-size:0.9rem; padding:0 4px;">
             <span style="font-weight:bold;">Red principal:</span>
             <span class="badge-principal">${mainRed}</span>
           </div>
 
-          <!-- Gráfica Publicaciones: Ayer vs Hoy -->
           <div class="chart-section">
             <div class="chart-title">Publicaciones</div>
             <div class="bars-container">
@@ -269,30 +401,6 @@
         </div>
       `;
     }
-
-    // Cargar y procesar Excel automáticamente
-    fetch('Redes.xlsx')
-      .then(res => res.arrayBuffer())
-      .then(data => {
-        const wb = XLSX.read(data, { type: 'array' });
-        const pubSheet = wb.Sheets['Publicaciones'];
-        const rows = XLSX.utils.sheet_to_json(pubSheet);
-
-        // Agrupar filas por Cuenta
-        const grouped = {};
-        rows.forEach(r => {
-          if (!grouped[r.cuenta]) grouped[r.cuenta] = [];
-          grouped[r.cuenta].push(r);
-        });
-
-        // Renderizar cada cuenta
-        const dashboard = document.getElementById('dashboard');
-        dashboard.innerHTML = '';
-        Object.keys(grouped).forEach(cuenta => {
-          dashboard.innerHTML += renderCard(cuenta, grouped[cuenta]);
-        });
-      })
-      .catch(err => console.error("Error al cargar Redes.xlsx:", err));
   </script>
 </body>
 </html>
