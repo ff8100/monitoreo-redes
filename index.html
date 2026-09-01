@@ -1,598 +1,298 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Monitoreo diario de redes sociales</title>
+  <meta charset="UTF-8">
+  <title>Dashboard Redes Sociales</title>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      --bg: #f4f6f9;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --primary: #1e293b;
+      --accent: #2563eb;
+      --bar-yesterday: #94a3b8;
+      --bar-today: #2563eb;
+    }
 
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      margin: 0;
+      padding: 20px;
+      color: var(--primary);
+    }
 
-<style>
-:root{
-  --bg:#f3efe8; --surface:#fff; --ink:#241c18; --muted:#776b62;
-  --primary:#c1440e; --primary-dark:#D06800; --gold:#e8a33d;
-  --soft:#f4dcc9; --border:#e5dcd0; --green:#4c8c5b;
-  --shadow:0 8px 25px rgba(36,28,24,.08); --radius:16px;
-}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,Arial,sans-serif}
-button,input{font:inherit}
-.app{min-height:100vh}
-.header{
-  background:linear-gradient(135deg,#20140f,#3a2116);color:#fff;
-  padding:24px 42px;display:flex;justify-content:space-between;align-items:center;gap:25px
-}
-.header h1{margin:0;font-size:25px;letter-spacing:-.5px}
-.header p{margin:5px 0 0;color:#d8c9bc;font-size:13px}
-.header-right{text-align:right}
-.date{font-size:18px;font-weight:800}
-.cut{font-size:11px;color:#d8c9bc;margin-top:4px}
-.container{max-width:1500px;margin:auto;padding:28px 34px 55px}
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
 
-.toolbar{
-  background:#fff;border:1px solid var(--border);border-radius:var(--radius);
-  padding:13px 16px;box-shadow:var(--shadow);display:flex;align-items:center;
-  justify-content:space-between;gap:15px;margin-bottom:22px;flex-wrap:wrap
-}
-.toolbar-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.btn{
-  border:0;border-radius:9px;padding:9px 14px;font-size:12px;font-weight:800;cursor:pointer;
-  background:#f2ece5;color:var(--ink)
-}
-.status{font-size:12px;color:var(--muted)}
-.status strong{color:var(--green)}
+    /* Tarjeta estilo Bosquejo */
+    .card {
+      background: var(--card-bg);
+      border: 2px solid var(--primary);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
 
-.section-head{display:flex;justify-content:space-between;align-items:end;margin:28px 0 12px}
-.section-head h2{margin:0;font-size:17px}
-.section-head span{font-size:11px;color:var(--muted)}
+    /* Encabezado: Foto y Nombre */
+    .account-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 12px;
+    }
 
-.person-grid{display:grid;grid-template-columns:repeat(3, 1fr);gap:18px}
-.person{
-  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
-  padding:20px;box-shadow:var(--shadow)
-}
-.person-top{display:flex;gap:15px;align-items:center;border-bottom:1px solid var(--border);padding-bottom:15px}
-.avatar{width:68px;height:68px;border-radius:14px;object-fit:cover;background:#eee;flex:none}
-.person-name{font-size:15px;font-weight:900}
-.person-sub{font-size:11px;color:var(--muted);margin-top:2px}
-.followers{font-family:monospace;font-size:20px;font-weight:800;margin-top:5px}
-.followers small{font-family:Inter;font-size:10px;color:var(--muted);font-weight:600}
+    .avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 2px solid var(--primary);
+      object-fit: cover;
+      background: #e0e0e0;
+    }
 
-.platforms{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
-.platform{background:var(--bg);border-radius:11px;padding:10px}
-.platform b{font-size:10px;display:block;color:var(--muted);text-transform:uppercase}
-.platform .n{font-family:monospace;font-size:16px;font-weight:800;margin-top:3px}
-.platform small{font-size:9px;color:var(--muted)}
+    .account-name {
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
 
-.kpis-summary{margin-top:12px;background:var(--soft);border-radius:11px;padding:12px;display:flex;justify-content:space-between;align-items:center}
-.kpis-summary .label{font-size:11px;font-weight:800;color:var(--primary-dark)}
-.kpis-summary .value{font-family:monospace;font-size:20px;font-weight:900;color:var(--primary-dark)}
+    /* Tabla Matriz: IG | FB | OTRA */
+    .matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: center;
+      font-size: 0.85rem;
+    }
 
-.charts-grid{display:grid;grid-template-columns:repeat(3, 1fr);gap:18px;margin-top:15px}
-.chart-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
-.chart-card h3{margin:0 0 15px 0;font-size:13px;color:var(--ink)}
+    .matrix-table th, .matrix-table td {
+      border: 1px solid var(--primary);
+      padding: 6px 4px;
+    }
 
-.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-.post{
-  background:#fff;border:1px solid var(--border);border-radius:15px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;justify-content:space-between
-}
-.post-img{height:180px;background:#e8e0d7;display:flex;align-items:center;justify-content:center;color:#8b7b6d;font-size:11px}
-.post-img img{width:100%;height:100%;object-fit:cover}
-.post-body{padding:14px;flex-grow:1;display:flex;flex-direction:column;justify-content:space-between}
-.post-tag{display:flex;justify-content:space-between;gap:10px;align-items:center}
-.badge{background:var(--soft);color:var(--primary-dark);font-size:9px;font-weight:900;padding:4px 6px;border-radius:6px;text-transform:uppercase}
-.post-title{font-size:13px;font-weight:900;margin-top:8px;line-height:1.3}
-.post-desc{font-size:11px;color:var(--muted);line-height:1.4;margin-top:6px}
-.link{display:inline-block;margin-top:10px;color:var(--primary);font-size:11px;font-weight:800;text-decoration:none}
-.link-table{color:var(--primary);text-decoration:none;font-weight:700}
-.link-table:hover{text-decoration:underline}
+    .matrix-table th {
+      background-color: #f1f5f9;
+      font-weight: bold;
+    }
 
-.tables-stack{display:flex;flex-direction:column;gap:20px}
-.table-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
-.table-card h3{margin:0 0 12px 0;font-size:14px;color:var(--primary-dark);font-weight:900}
-table{width:100%;border-collapse:collapse;font-size:12px}
-th{text-align:left;font-size:10px;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--border)}
-td{padding:10px;border-bottom:1px solid #eee}
-.account{font-weight:800}
-.footer{margin-top:25px;padding-top:15px;border-top:1px solid var(--border);font-size:10.5px;color:var(--muted);line-height:1.5}
+    .row-label {
+      text-align: left;
+      font-weight: bold;
+      padding-left: 8px !important;
+      background-color: #f8fafc;
+    }
 
-.empty{padding:25px;text-align:center;color:var(--muted);font-size:12px;background:#fff;border:1px dashed var(--border);border-radius:12px}
+    .badge-principal {
+      display: inline-block;
+      padding: 2px 8px;
+      background: #dbeafe;
+      color: #1e40af;
+      border-radius: 4px;
+      font-weight: bold;
+    }
 
-@media(max-width:1100px){
-  .person-grid, .charts-grid, .feature-grid{grid-template-columns:1fr}
-}
-</style>
+    /* Gráfica de Barras: Ayer vs Hoy */
+    .chart-section {
+      border-top: 1px dashed var(--primary);
+      padding-top: 12px;
+      text-align: center;
+    }
+
+    .chart-title {
+      font-weight: bold;
+      margin-bottom: 12px;
+      font-size: 0.95rem;
+    }
+
+    .bars-container {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 30px;
+      height: 120px;
+      padding-bottom: 5px;
+    }
+
+    .bar-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 45px;
+      height: 100%;
+      justify-content: flex-end;
+    }
+
+    .bar-val {
+      font-size: 0.75rem;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .bar {
+      width: 100%;
+      border: 1.5px solid var(--primary);
+      border-radius: 4px 4px 0 0;
+      transition: height 0.3s ease;
+    }
+
+    .bar-yesterday { background-color: var(--bar-yesterday); }
+    .bar-today { background-color: var(--bar-today); }
+
+    .bar-label {
+      margin-top: 6px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+  </style>
 </head>
-
 <body>
-<div class="app">
-<header class="header">
-  <div>
-    <h1>Monitoreo diario de redes sociales</h1>
-    <p>Secretaría de Igualdad e Inclusión · Reporte ejecutivo</p>
-  </div>
-  <div class="header-right">
-    <div class="date" id="reportDate">—</div>
-    <div class="cut" id="cutDate">Corte de estadísticas: —</div>
-  </div>
-</header>
 
-<main class="container">
-
-  <div class="toolbar">
-    <div class="toolbar-left">
-      <button class="btn" onclick="window.print()">🖨️ Imprimir / PDF</button>
-    </div>
-    <div class="status" id="status">Cargando datos…</div>
+  <div class="container" id="dashboard">
+    <!-- Se genera dinámicamente -->
   </div>
 
-  <div class="section-head">
-    <h2>Resumen por cuenta</h2>
-    <span>Seguidores al corte anterior y publicaciones activas</span>
-  </div>
-  <div class="person-grid">
-    <section class="person" id="secretaria"></section>
-    <section class="person" id="felix"></section>
-    <section class="person" id="monica"></section>
-  </div>
+  <script>
+    // Configuración de avatares locales
+    const AVATARS = {
+      'Félix Arratia': 'Felix.png',
+      'Secretaría de Igualdad e Inclusión': 'Logo.png',
+      'Mónica Oyervides': 'Monica.png'
+    };
 
-  <div class="section-head">
-    <h2>Publicaciones por Red Social</h2>
-    <span>Comparativa de actividad por corte</span>
-  </div>
-  <div class="charts-grid">
-    <div class="chart-card">
-      <h3>Secretaría de Igualdad e Inclusión</h3>
-      <canvas id="chartSecretaria"></canvas>
-    </div>
-    <div class="chart-card">
-      <h3>Félix Arratia</h3>
-      <canvas id="chartFelix"></canvas>
-    </div>
-    <div class="chart-card">
-      <h3>Mónica Oyervides</h3>
-      <canvas id="chartMonica"></canvas>
-    </div>
-  </div>
-
-  <div class="section-head">
-    <h2>Publicación destacada por cuenta</h2>
-    <span>Destacada principal del periodo</span>
-  </div>
-  <div class="feature-grid" id="featured"></div>
-
-  <div class="section-head">
-    <h2>Actividad de publicaciones</h2>
-    <span>Detalle de contenido por cuenta</span>
-  </div>
-  
-  <div class="tables-stack">
-    <div class="table-card">
-      <h3>Secretaría de Igualdad e Inclusión</h3>
-      <table>
-        <thead>
-          <tr>
-            <th style="width: 15%;">Red</th>
-            <th style="width: 35%;">Tema / Título</th>
-            <th>Publicación / Descripción</th>
-          </tr>
-        </thead>
-        <tbody id="tableSecretaria"></tbody>
-      </table>
-    </div>
-
-    <div class="table-card">
-      <h3>Félix Arratia</h3>
-      <table>
-        <thead>
-          <tr>
-            <th style="width: 15%;">Red</th>
-            <th style="width: 35%;">Tema / Título</th>
-            <th>Publicación / Descripción</th>
-          </tr>
-        </thead>
-        <tbody id="tableFelix"></tbody>
-      </table>
-    </div>
-
-    <div class="table-card">
-      <h3>Mónica Oyervides</h3>
-      <table>
-        <thead>
-          <tr>
-            <th style="width: 15%;">Red</th>
-            <th style="width: 35%;">Tema / Título</th>
-            <th>Publicación / Descripción</th>
-          </tr>
-        </thead>
-        <tbody id="tableMonica"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <div class="footer">
-    <b>Fuente:</b> archivo Redes.xlsx. El tablero no modifica el Excel: únicamente lo lee y transforma sus datos en una presentación ejecutiva.
-  </div>
-</main>
-</div>
-
-<script>
-let DATA = { resumen:{}, publicaciones:[], cuentas:[], destacadas:[] };
-let IMAGES = {};
-let chartInstances = {};
-
-const fmt = n => new Intl.NumberFormat('es-MX').format(Number(n)||0);
-const norm = s => String(s ?? '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-
-const val = (obj, names) => {
-  if(!obj) return '';
-  for(const n of names){
-    if(obj[n] !== undefined && obj[n] !== null && obj[n] !== '') return obj[n];
-    const key = Object.keys(obj).find(k => norm(k) === norm(n));
-    if(key && obj[key] !== undefined && obj[key] !== null && obj[key] !== '') return obj[key];
-  }
-  return '';
-};
-
-function parseDate(x){
-  if(!x) return null;
-  if(x instanceof Date) return x;
-  if(typeof x === 'number') return new Date((x - 25569) * 86400 * 1000);
-  if(typeof x === 'string'){
-    const cleanStr = x.trim();
-    const latParts = cleanStr.split('/');
-    if(latParts.length === 3 && latParts[2].length === 4){
-      return new Date(latParts[2], latParts[1] - 1, latParts[0]);
+    function formatNum(num) {
+      if (!num) return '0';
+      return Number(num).toLocaleString('es-MX');
     }
-    const isoParts = cleanStr.split('-');
-    if(isoParts.length === 3 && isoParts[0].length === 4){
-      return new Date(isoParts[0], isoParts[1] - 1, isoParts[2]);
-    }
-    const d = new Date(cleanStr);
-    return isNaN(d) ? null : d;
-  }
-  return null;
-}
 
-function dateText(x){
-  const d = parseDate(x);
-  if(!d) return x || '—';
-  return d.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
-}
-
-function keyAccount(s){
-  const n = norm(s);
-  if(n.includes('felix')) return 'felix';
-  if(n.includes('monica') || n.includes('oyervides')) return 'monica';
-  return 'secretaria';
-}
-
-document.addEventListener('DOMContentLoaded', async () => {
-  try {
-    const res = await fetch('Redes.xlsx?v=' + new Date().getTime());
-    if (res.ok) {
-      const buf = await res.arrayBuffer();
-      const wb = XLSX.read(buf, { type: 'array', cellDates: true, cellNF: false, cellText: false });
-      const sheet = (name) => wb.Sheets[name] ? XLSX.utils.sheet_to_json(wb.Sheets[name], { defval: '', raw: false }) : [];
+    function renderCard(accountName, rows) {
+      // Filtrar plataformas por tipo
+      const ig = rows.find(r => r.red.toLowerCase().includes('instagram')) || {};
+      const fb = rows.find(r => r.red.toLowerCase().includes('facebook')) || {};
       
-      const resSheet = sheet('01_Resumen');
-      DATA.resumen = {};
+      // Capturar otras redes (TikTok, X, LinkedIn, etc.)
+      const otras = rows.filter(r => 
+        !r.red.toLowerCase().includes('instagram') && 
+        !r.red.toLowerCase().includes('facebook')
+      );
 
-      if (resSheet.length > 0) {
-        if (resSheet[0]['Campo'] !== undefined || resSheet[0]['campo'] !== undefined) {
-          resSheet.forEach(r => {
-            const fieldKey = val(r, ['Campo', 'campo']);
-            const textVal = val(r, ['Texto', 'texto', 'Valor', 'valor']);
-            if(fieldKey) DATA.resumen[fieldKey] = textVal;
-          });
-        } else {
-          DATA.resumen = resSheet[0];
-        }
-      }
-      
-      DATA.publicaciones = sheet('02_Publicaciones');
-      DATA.cuentas = sheet('03_Cuentas');
-      DATA.destacadas = sheet('04_Destacada');
+      // Consolidar totales
+      const igSeg = ig.seguidores || 0;
+      const fbSeg = fb.seguidores || 0;
+      const otrasSeg = otras.reduce((sum, r) => sum + (r.seguidores || 0), 0);
 
-      IMAGES['Logo.png'] = 'Logo.png';
-      IMAGES['Felix.png'] = 'Felix.png';
-      IMAGES['Monica.png'] = 'Monica.png';
-      
-      DATA.destacadas.forEach(d => {
-        const imgName = val(d, ['archivo_imagen', 'Archivo_imagen']);
-        if(imgName) IMAGES[imgName] = `imagenes/${imgName}`;
-      });
+      const igPub = ig.publicaciones || 0;
+      const fbPub = fb.publicaciones || 0;
+      const otrasPub = otras.reduce((sum, r) => sum + (r.publicaciones || 0), 0);
 
-      document.getElementById('status').innerHTML = '<strong>✓ Datos actualizados</strong>';
-      renderAll();
-    } else {
-      document.getElementById('status').textContent = 'No se encontró el archivo Redes.xlsx';
-    }
-  } catch (err) {
-    console.error('Error al cargar datos automáticos:', err);
-    document.getElementById('status').textContent = 'Error al cargar los datos';
-  }
-});
+      // Totales de publicaciones globales (Ayer vs Hoy)
+      const pubAyerTotal = rows.reduce((sum, r) => sum + (r.publicaciones_ayer || 0), 0);
+      const pubHoyTotal = rows.reduce((sum, r) => sum + (r.publicaciones_hoy || 0), 0);
 
-function renderAll(){
-  renderHeader();
-  renderPerson('secretaria', 'SECRETARÍA DE IGUALDAD E INCLUSIÓN', 'Logo.png');
-  renderPerson('felix', 'FÉLIX ARRATIA', 'Felix.png');
-  renderPerson('monica', 'MÓNICA OYERVIDES', 'Monica.png');
-  renderCharts();
-  renderFeatured();
-  renderActivity();
-}
+      // Determinar Red Principal (la de mayor seguidores)
+      let mainRed = 'FB';
+      let maxSeg = fbSeg;
+      if (igSeg > maxSeg) { mainRed = 'IG'; maxSeg = igSeg; }
+      if (otrasSeg > maxSeg) { mainRed = 'Otra'; }
 
-function renderHeader(){
-  const r = DATA.resumen;
-  const report = val(r, ['fecha_reporte', 'Fecha_reporte', 'Fecha Reporte']);
-  const upd = val(r, ['fecha_actualizacion', 'Fecha_actualizacion', 'Fecha_actualización', 'Fecha Actualización']);
-  
-  document.getElementById('reportDate').textContent = report ? dateText(report) : 'Reporte diario';
-  document.getElementById('cutDate').textContent = 'Corte de estadísticas: ' + (upd ? dateText(upd) : '—');
-}
+      // Escala para la altura de las barras (máximo 80px)
+      const maxVal = Math.max(pubAyerTotal, pubHoyTotal, 1);
+      const hAyer = Math.max((pubAyerTotal / maxVal) * 80, 6);
+      const hHoy = Math.max((pubHoyTotal / maxVal) * 80, 6);
 
-function accountRows(which){
-  return DATA.cuentas.filter(x => keyAccount(val(x, ['Cuenta', 'cuenta'])) === which);
-}
-function publicationRows(which){
-  return DATA.publicaciones.filter(x => keyAccount(val(x, ['cuenta', 'Cuenta'])) === which);
-}
-function sum(rows, names){
-  return rows.reduce((a, r) => a + (Number(val(r, names)) || 0), 0);
-}
+      const avatarSrc = AVATARS[accountName] || '';
 
-function renderPerson(which, title, defaultImage){
-  const el = document.getElementById(which);
-  if(!el) return;
-  const rows = accountRows(which);
-  const pubs = publicationRows(which);
-  
-  const fbRow = rows.find(r => norm(val(r, ['Red', 'red'])).includes('fb') || norm(val(r, ['Red', 'red'])).includes('facebook'));
-  const igRow = rows.find(r => norm(val(r, ['Red', 'red'])).includes('ig') || norm(val(r, ['Red', 'red'])).includes('instagram'));
+      return `
+        <div class="card">
+          <!-- Encabezado -->
+          <div class="account-header">
+            <img class="avatar" src="${avatarSrc}" onerror="this.src='https://via.placeholder.com/50'">
+            <div class="account-name">${accountName}</div>
+          </div>
 
-  // Seguidores Corte Anterior
-  const fbAnt = fbRow ? val(fbRow, ['Seguidores', 'seguidores']) : 0;
-  const igAnt = igRow ? val(igRow, ['Seguidores', 'seguidores']) : 0;
+          <!-- Matriz de Métricas -->
+          <table class="matrix-table">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Ig</th>
+                <th>Fb</th>
+                <th>Otra</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="row-label">Seguidores</td>
+                <td>${formatNum(igSeg)}</td>
+                <td>${formatNum(fbSeg)}</td>
+                <td>${formatNum(otrasSeg)}</td>
+              </tr>
+              <tr>
+                <td class="row-label">Publicaciones</td>
+                <td>${formatNum(igPub)}</td>
+                <td>${formatNum(fbPub)}</td>
+                <td>${formatNum(otrasPub)}</td>
+              </tr>
+            </tbody>
+          </table>
 
-  // Seguidores Corte Actual
-  const fbAct = fbRow ? val(fbRow, ['seguidores_corte_actual', 'seguidores_actual']) : 0;
-  const igAct = igRow ? val(igRow, ['seguidores_corte_actual', 'seguidores_actual']) : 0;
+          <!-- Red Principal -->
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.9rem; padding:0 4px;">
+            <span style="font-weight:bold;">Red principal:</span>
+            <span class="badge-principal">${mainRed}</span>
+          </div>
 
-  const postsCount = pubs.length;
-  const img = IMAGES[defaultImage] || '';
-
-  el.innerHTML = `
-    <div class="person-top">
-      <img class="avatar" src="${img}" onerror="this.style.display='none'">
-      <div>
-        <div class="person-name">${title}</div>
-        <div class="person-sub">Presencia digital</div>
-      </div>
-    </div>
-    <div class="platforms">
-      <div class="platform">
-        <b>Facebook</b>
-        <div class="n">${fmt(fbAct || fbAnt)}</div>
-        <small>Ant: ${fmt(fbAnt)}</small>
-      </div>
-      <div class="platform">
-        <b>Instagram</b>
-        <div class="n">${fmt(igAct || igAnt)}</div>
-        <small>Ant: ${fmt(igAnt)}</small>
-      </div>
-    </div>
-    <div class="kpis-summary">
-      <span class="label">PUBLICACIONES ACTIVAS</span>
-      <span class="value">${fmt(postsCount)}</span>
-    </div>`;
-}
-
-function renderCharts(){
-  const r = DATA.resumen;
-
-  const rawAnt = val(r, ['fecha_corte_anterior', 'Fecha_corte_anterior']);
-  const rawAct = val(r, ['fecha_actualizacion', 'Fecha_actualizacion', 'fecha_reporte', 'Fecha_reporte']);
-
-  const dateAnt = parseDate(rawAnt);
-  const dateAct = parseDate(rawAct);
-
-  const labelAnt = dateAnt ? dateText(dateAnt) : 'Corte Anterior';
-  const labelAct = dateAct ? dateText(dateAct) : 'Corte Actual';
-
-  const toYMD = (d) => {
-    const parsed = parseDate(d);
-    if (!parsed) return null;
-    const y = parsed.getFullYear();
-    const m = String(parsed.getMonth() + 1).padStart(2, '0');
-    const day = String(parsed.getDate()).padStart(2, '0');
-    return `${y}-${m}-${day}`;
-  };
-
-  const keyAnt = toYMD(dateAnt);
-  const keyAct = toYMD(dateAct);
-
-  const contarPubsPorFecha = (cuentaKey, redBuscada, targetKey) => {
-    if (!targetKey) return 0;
-    const pubs = publicationRows(cuentaKey);
-
-    return pubs.filter(p => {
-      const redVal = norm(val(p, ['red', 'Red']));
-      const pDateKey = toYMD(val(p, ['fecha', 'Fecha']));
-
-      let matchesRed = false;
-      if (redBuscada === 'fb' && (redVal.includes('facebook') || redVal.includes('fb'))) matchesRed = true;
-      if (redBuscada === 'ig' && (redVal.includes('instagram') || redVal.includes('ig'))) matchesRed = true;
-
-      return matchesRed && (pDateKey === targetKey);
-    }).length;
-  };
-
-  const configs = [
-    {
-      id: 'chartSecretaria',
-      cuenta: 'secretaria',
-      fbAnt: contarPubsPorFecha('secretaria', 'fb', keyAnt),
-      fbAct: contarPubsPorFecha('secretaria', 'fb', keyAct),
-      igAnt: contarPubsPorFecha('secretaria', 'ig', keyAnt),
-      igAct: contarPubsPorFecha('secretaria', 'ig', keyAct)
-    },
-    {
-      id: 'chartFelix',
-      cuenta: 'felix',
-      fbAnt: contarPubsPorFecha('felix', 'fb', keyAnt),
-      fbAct: contarPubsPorFecha('felix', 'fb', keyAct),
-      igAnt: contarPubsPorFecha('felix', 'ig', keyAnt),
-      igAct: contarPubsPorFecha('felix', 'ig', keyAct)
-    },
-    {
-      id: 'chartMonica',
-      cuenta: 'monica',
-      fbAnt: contarPubsPorFecha('monica', 'fb', keyAnt),
-      fbAct: contarPubsPorFecha('monica', 'fb', keyAct),
-      igAnt: contarPubsPorFecha('monica', 'ig', keyAnt),
-      igAct: contarPubsPorFecha('monica', 'ig', keyAct)
-    }
-  ];
-
-  configs.forEach(cfg => {
-    if(chartInstances[cfg.id]){
-      chartInstances[cfg.id].destroy();
-    }
-
-    const canvas = document.getElementById(cfg.id);
-    if(!canvas) return;
-    const ctx = canvas.getContext('2d');
-
-    chartInstances[cfg.id] = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['Facebook', 'Instagram'],
-        datasets: [
-          {
-            label: `Corte Ant. (${labelAnt})`,
-            data: [cfg.fbAnt, cfg.igAnt],
-            backgroundColor: '#776b62',
-            borderRadius: 6
-          },
-          {
-            label: `Corte Act. (${labelAct})`,
-            data: [cfg.fbAct, cfg.igAct],
-            backgroundColor: '#c1440e',
-            borderRadius: 6
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { 
-            position: 'top',
-            labels: { font: { size: 10, weight: 'bold' } }
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: { precision: 0 },
-            title: { display: true, text: 'Publicaciones', font: { size: 10, weight: 'bold' } }
-          }
-        }
-      }
-    });
-  });
-}
-
-function renderFeatured(){
-  const box = document.getElementById('featured');
-  box.innerHTML = '';
-
-  const cuentas = ['secretaria', 'felix', 'monica'];
-
-  cuentas.forEach(cKey => {
-    const r = DATA.destacadas.find(d => keyAccount(val(d, ['cuenta', 'Cuenta'])) === cKey);
-
-    if(!r){
-      box.insertAdjacentHTML('beforeend', `<div class="empty">Sin publicación destacada para esta cuenta.</div>`);
-      return;
-    }
-
-    const id = val(r, ['id_publicacion', 'ID_publicacion', 'id', 'ID']);
-    const pub = DATA.publicaciones.find(p => String(val(p, ['id_publicacion', 'ID_publicacion', 'id', 'ID'])) === String(id)) || {};
-    const account = val(r, ['cuenta', 'Cuenta']) || val(pub, ['cuenta', 'Cuenta']);
-    const red = val(r, ['red', 'Red']) || val(pub, ['red', 'Red']);
-    const imageName = val(r, ['archivo_imagen', 'Archivo_imagen', 'imagen', 'Imagen']);
-    const image = IMAGES[imageName] || IMAGES[id] || (imageName ? `imagenes/${imageName}` : '');
-    const title = val(pub, ['tema', 'Tema']) || val(r, ['texto', 'Texto']) || 'Publicación destacada';
-    const desc = val(pub, ['descripcion', 'Descripción']) || '';
-    const reason = val(r, ['motivo', 'Motivo']) || '';
-    const link = val(pub, ['enlace', 'Enlace']) || '#';
-
-    box.insertAdjacentHTML('beforeend', `
-      <article class="post">
-        <div>
-          <div class="post-img">${image ? `<img src="${image}" alt="">` : 'Sin Imagen'}</div>
-          <div class="post-body">
-            <div class="post-tag">
-              <span class="badge">${account}</span>
-              <span class="badge">${red}</span>
+          <!-- Gráfica Publicaciones: Ayer vs Hoy -->
+          <div class="chart-section">
+            <div class="chart-title">Publicaciones</div>
+            <div class="bars-container">
+              <div class="bar-group">
+                <span class="bar-val">${pubAyerTotal}</span>
+                <div class="bar bar-yesterday" style="height: ${hAyer}px;"></div>
+                <span class="bar-label">Ayer</span>
+              </div>
+              <div class="bar-group">
+                <span class="bar-val">${pubHoyTotal}</span>
+                <div class="bar bar-today" style="height: ${hHoy}px;"></div>
+                <span class="bar-label">Hoy</span>
+              </div>
             </div>
-            <div class="post-title">${escapeHtml(title)}</div>
-            <div class="post-desc">${escapeHtml(desc)}</div>
-            ${reason ? `<div style="margin-top:9px;font-size:10px;color:var(--muted)">Destacada por: <b>${escapeHtml(reason)}</b></div>` : ''}
           </div>
         </div>
-        <div style="padding:0 14px 14px;">
-          ${link && link !== '#' ? `<a class="link" href="${link}" target="_blank">Ver publicación ↗</a>` : ''}
-        </div>
-      </article>`);
-  });
-}
-
-function renderActivity(){
-  const mapAccounts = [
-    { key: 'secretaria', tableId: 'tableSecretaria' },
-    { key: 'felix', tableId: 'tableFelix' },
-    { key: 'monica', tableId: 'tableMonica' }
-  ];
-
-  mapAccounts.forEach(acc => {
-    const body = document.getElementById(acc.tableId);
-    if(!body) return;
-    body.innerHTML = '';
-
-    const pubs = publicationRows(acc.key);
-
-    if(!pubs.length){
-      body.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--muted);padding:15px;">Sin publicaciones registradas</td></tr>';
-      return;
+      `;
     }
 
-    pubs.forEach(p => {
-      const red = val(p, ['red', 'Red']) || '—';
-      const tema = val(p, ['tema', 'Tema']) || '—';
-      const desc = val(p, ['descripcion', 'Descripción', 'texto', 'Texto']) || 'Sin texto';
-      const link = val(p, ['enlace', 'Enlace', 'link', 'Link']);
+    // Cargar y procesar Excel automáticamente
+    fetch('Redes.xlsx')
+      .then(res => res.arrayBuffer())
+      .then(data => {
+        const wb = XLSX.read(data, { type: 'array' });
+        const pubSheet = wb.Sheets['Publicaciones'];
+        const rows = XLSX.utils.sheet_to_json(pubSheet);
 
-      const linkHtml = (link && link !== '#') 
-        ? `<br><a class="link-table" href="${link}" target="_blank">Abrir publicación ↗</a>`
-        : '';
+        // Agrupar filas por Cuenta
+        const grouped = {};
+        rows.forEach(r => {
+          if (!grouped[r.cuenta]) grouped[r.cuenta] = [];
+          grouped[r.cuenta].push(r);
+        });
 
-      body.insertAdjacentHTML('beforeend', `
-        <tr>
-          <td><b>${escapeHtml(red)}</b></td>
-          <td>${escapeHtml(tema)}</td>
-          <td>${escapeHtml(desc)} ${linkHtml}</td>
-        </tr>`);
-    });
-  });
-}
-
-function escapeHtml(s){
-  return String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
-}
-</script>
+        // Renderizar cada cuenta
+        const dashboard = document.getElementById('dashboard');
+        dashboard.innerHTML = '';
+        Object.keys(grouped).forEach(cuenta => {
+          dashboard.innerHTML += renderCard(cuenta, grouped[cuenta]);
+        });
+      })
+      .catch(err => console.error("Error al cargar Redes.xlsx:", err));
+  </script>
 </body>
 </html>
